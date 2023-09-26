@@ -1,13 +1,13 @@
-name: "Example Action"
-description: "This values need to be changed"
+name: "Auto Merge Bot"
+description: "Bot which enables or disable auto-merge"
 author: Bullrich
 branding:
-  icon: copy
-  color: yellow
+  icon: git-merge
+  color: red
 inputs:
   GITHUB_TOKEN:
     required: true
-    description: The token to access the repo
+    description: The token to access the repo information
   MERGE_METHOD:
     required: false
     description: The merge method to use. Must be one of MERGE, SQUASH or REBASE.
