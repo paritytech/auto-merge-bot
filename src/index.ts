@@ -44,9 +44,10 @@ if (context.payload.comment) {
   const comment = context.payload.comment as unknown as IssueComment;
   const issue = context.payload.issue as unknown as Issue;
   const logger = generateCoreLogger();
+  const api = new PullRequestApi(getOctokit(token), logger, { ...repo, number: issue.number });
   const gql = getOctokit(token).graphql.defaults({ headers: { authorization: `token ${token}` } }) as graphql;
   const merger = new Merger(issue.node_id, gql, logger);
-  runOnComment(comment, logger, merger).then(() => logger.info("Finished!")).catch(setFailed);
+  runOnComment(comment, logger, merger, api).then(() => logger.info("Finished!")).catch(setFailed);
 } else {
   console.error("No 'comment' object in the payload!");
 }

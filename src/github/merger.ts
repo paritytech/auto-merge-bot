@@ -38,11 +38,10 @@ export class Merger {
     }
 
     async disableAutoMerge() {
-        const mergeRequest = await this.gql(DISABLE_AUTO_MERGE,
+        const mergeRequest = await this.gql<{ disablePullRequestAutoMerge: { clientMutationId: unknown } }>(DISABLE_AUTO_MERGE,
             {
                 prId: this.nodeId
             });
         this.logger.info("Succesfully disabled auto-merge");
-        this.logger.info("data obtained: " + JSON.stringify(mergeRequest));
     }
 }

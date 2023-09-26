@@ -1,26 +1,13 @@
 import { IssueComment } from "@octokit/webhooks-types";
 import { Merger } from "./github/merger";
 import { ActionLogger } from "./github/types";
+import { PullRequestApi } from "./github/pullRequest";
 
 const BOT_COMMAND = "/bot";
 
-export const PULL_REQUEST_ID_QUERY = `
-query($organization: String!, $repo: String!, $number: Int!) {
-    repository(name: $repo, owner: $organization) {
-        pullRequest(number: $number) {
-                  id
-              }
-        } 
-}`;
+type Command = "merge" | "cancel";
 
-export const ENABLE_AUTO_MERGE = `
-mutation($prId: ID!) {
-    enablePullRequestAutoMerge(input: {pullRequestId: $prId, mergeMethod: SQUASH}) {
-        clientMutationId
-         }
-}`
-
-export const runOnComment = async (comment: IssueComment, logger: ActionLogger, merger:Merger) => {
+export const runOnComment = async (comment: IssueComment, logger: ActionLogger, merger:Merger, api: PullRequestApi) => {
     logger.info("Running action on comment: " + comment.html_url);
     if (!comment.body.startsWith(BOT_COMMAND)) {
         logger.info(`Ignoring comment ${comment.html_url} as it does not start with '${BOT_COMMAND}'`);
@@ -35,6 +22,7 @@ export const runOnComment = async (comment: IssueComment, logger: ActionLogger, 
     if (command === "merge") {
         try {
             await merger.enableAutoMerge();
+            await api.comment("Enabled `auto-merge` in Pull Request");
         }
         catch (e) {
             logger.error(e as Error);
@@ -43,10 +31,17 @@ export const runOnComment = async (comment: IssueComment, logger: ActionLogger, 
     } else if (command === "cancel") {
         try {
             await merger.disableAutoMerge();
+            await api.comment("Disabled `auto-merge` in Pull Request");
         }
         catch (e) {
             logger.error(e as Error);
             throw e;
         }
+    } else {
+        await api.comment(`## Auto-Merge-Bot
+        ### Available commands
+        - \`/bot merge\`: Enabled auto-merge for Pull Request
+        - \'/bot cancel\': Cancels auto-merge for Pull Request
+        """`);
     }
 }
