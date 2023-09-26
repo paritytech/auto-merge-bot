@@ -17,4 +17,8 @@ export class PullRequestApi {
   async comment(message: string) {
     await this.api.rest.issues.createComment({ ...this.pullData, body: message, issue_number: this.pullData.number });
   }
+
+  async reactToComment(commentId: number): Promise<void> {
+    await this.api.rest.reactions.createForIssueComment({ ...this.pullData, comment_id: commentId, content: "+1" });
+  }
 }

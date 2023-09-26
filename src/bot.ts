@@ -21,6 +21,7 @@ export const runOnComment = async (comment: IssueComment, logger: ActionLogger, 
 
     if (command === "merge") {
         try {
+            await api.reactToComment(comment.id);
             await merger.enableAutoMerge();
             await api.comment("Enabled `auto-merge` in Pull Request");
         }
@@ -30,6 +31,7 @@ export const runOnComment = async (comment: IssueComment, logger: ActionLogger, 
         }
     } else if (command === "cancel") {
         try {
+            await api.reactToComment(comment.id);
             await merger.disableAutoMerge();
             await api.comment("Disabled `auto-merge` in Pull Request");
         }
