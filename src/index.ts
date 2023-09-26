@@ -2,11 +2,12 @@ import { getInput, setFailed, setOutput } from "@actions/core";
 import { context, getOctokit } from "@actions/github";
 import { Context } from "@actions/github/lib/context";
 import { graphql } from "@octokit/graphql/dist-types/types";
+import { PullRequestMergeMethod } from "@octokit/graphql-schema";
 import { Issue, IssueComment } from "@octokit/webhooks-types";
 
 import { Bot } from "./bot";
 import { CommentsApi } from "./github/comments";
-import { MergeMethod, Merger } from "./github/merger";
+import { Merger } from "./github/merger";
 import { generateCoreLogger } from "./util";
 
 const getRepo = (ctx: Context) => {
@@ -37,14 +38,15 @@ if (context.eventName !== "issue_comment") {
   throw new Error("Comment happened on an issue, not a PR");
 }
 
-const getMergeMethod = (): MergeMethod => {
+const getMergeMethod = (): PullRequestMergeMethod => {
   const method = (getInput("MERGE_METHOD", { required: false }) ??
-    "SQUASH") as MergeMethod;
+    "SQUASH") as PullRequestMergeMethod;
   if (method !== "SQUASH" && method !== "MERGE" && method !== "REBASE") {
     throw new Error(
       "MERGE_METHOD must be either 'SQUASH', 'MERGE' or 'REBASE'",
     );
   }
+  logger.info(`Merge type is '${method}'`);
 
   return method;
 };

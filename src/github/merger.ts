@@ -1,5 +1,7 @@
 import { graphql } from "@octokit/graphql";
 import { ActionLogger } from "./types";
+import { PullRequestMergeMethod } from "@octokit/graphql-schema";
+
 
 // https://docs.github.com/en/graphql/reference/mutations#enablepullrequestautomerge
 export const ENABLE_AUTO_MERGE = `
@@ -20,7 +22,7 @@ mutation($prId: ID!) {
 export type MergeMethod = "SQUASH" | "MERGE" | "REBASE";
 
 export class Merger {
-    constructor(private readonly nodeId: string, private readonly gql: typeof graphql, private readonly logger: ActionLogger, private readonly mergeMethod: MergeMethod) {
+    constructor(private readonly nodeId: string, private readonly gql: typeof graphql, private readonly logger: ActionLogger, private readonly mergeMethod: PullRequestMergeMethod) {
 
     }
 

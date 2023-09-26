@@ -1,4 +1,4 @@
-import { validate } from "@octokit/graphql-schema";
+import { validate, PullRequestMergeMethod } from "@octokit/graphql-schema";
 
 import { ENABLE_AUTO_MERGE, DISABLE_AUTO_MERGE } from "../github/merger";
 
