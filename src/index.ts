@@ -1,14 +1,13 @@
-import { getInput, info, setFailed, setOutput } from "@actions/core";
+import { getInput, setFailed, setOutput } from "@actions/core";
 import { context, getOctokit } from "@actions/github";
 import { Context } from "@actions/github/lib/context";
-import { Issue, IssueComment } from "@octokit/webhooks-types";
-import { PullRequest } from "@octokit/webhooks-types";
-
-import { CommentsApi } from "./github/comments";
-import { generateCoreLogger } from "./util";
-import { Bot } from "./bot";
 import { graphql } from "@octokit/graphql/dist-types/types";
-import { Merger } from "./github/merger";
+import { Issue, IssueComment } from "@octokit/webhooks-types";
+
+import { Bot } from "./bot";
+import { CommentsApi } from "./github/comments";
+import { MergeMethod, Merger } from "./github/merger";
+import { generateCoreLogger } from "./util";
 
 const getRepo = (ctx: Context) => {
   let repo = getInput("repo", { required: false });
@@ -25,30 +24,48 @@ const getRepo = (ctx: Context) => {
 };
 
 const repo = getRepo(context);
+const logger = generateCoreLogger();
 
 setOutput("repo", `${repo.owner}/${repo.repo}`);
 
-console.log("Event received", context.payload);
-console.log("Job", context.job);
-console.log("Action", context.action);
-console.log("event name", context.eventName);
+logger.debug("Event received: " + JSON.stringify(context.payload));
+logger.info(`Received event of typer ${context.eventName}`);
 
 if (context.eventName !== "issue_comment") {
   throw new Error("Wrong event type");
 } else if (!context.payload.issue?.pull_request) {
-  console.log("Comment happened on an issue, not a PR");
+  throw new Error("Comment happened on an issue, not a PR");
 }
 
+const getMergeMethod = (): MergeMethod => {
+  const method = (getInput("MERGE_METHOD", { required: false }) ??
+    "SQUASH") as MergeMethod;
+  if (method !== "SQUASH" && method !== "MERGE" && method !== "REBASE") {
+    throw new Error(
+      "MERGE_METHOD must be either 'SQUASH', 'MERGE' or 'REBASE'",
+    );
+  }
+
+  return method;
+};
+
 if (context.payload.comment) {
-  const token = getInput("token", { required: true });
+  const token = getInput("GITHUB_TOKEN", { required: true });
   const comment = context.payload.comment as unknown as IssueComment;
   const issue = context.payload.issue as unknown as Issue;
-  const logger = generateCoreLogger();
-  const commentsApi = new CommentsApi(getOctokit(token), logger, { ...repo, number: issue.number });
-  const gql = getOctokit(token).graphql.defaults({ headers: { authorization: `token ${token}` } }) as graphql;
-  const merger = new Merger(issue.node_id, gql, logger);
+  const commentsApi = new CommentsApi(getOctokit(token), logger, {
+    ...repo,
+    number: issue.number,
+  });
+  const gql = getOctokit(token).graphql.defaults({
+    headers: { authorization: `token ${token}` },
+  }) as graphql;
+  const merger = new Merger(issue.node_id, gql, logger, getMergeMethod());
   const bot = new Bot(comment, issue, logger, commentsApi);
-  bot.run(merger).then(() => logger.info("Finished!")).catch(setFailed);
+  bot
+    .run(merger)
+    .then(() => logger.info("Finished!"))
+    .catch(setFailed);
 } else {
-  console.error("No 'comment' object in the payload!");
+  throw new Error("No 'comment' object in the payload!");
 }

@@ -3,8 +3,8 @@ import { ActionLogger } from "./types";
 
 // https://docs.github.com/en/graphql/reference/mutations#enablepullrequestautomerge
 export const ENABLE_AUTO_MERGE = `
-mutation($prId: ID!) {
-    enablePullRequestAutoMerge(input: {pullRequestId: $prId, mergeMethod: SQUASH}) {
+mutation($prId: ID!, $method: PullRequestMergeMethod!) {
+    enablePullRequestAutoMerge(input: {pullRequestId: $prId, mergeMethod: $method}) {
         clientMutationId
          }
 }`;
@@ -17,15 +17,18 @@ mutation($prId: ID!) {
          }
 }`;
 
+export type MergeMethod = "SQUASH" | "MERGE" | "REBASE";
+
 export class Merger {
-    constructor(private readonly nodeId: string, private readonly gql: typeof graphql, private readonly logger: ActionLogger) {
+    constructor(private readonly nodeId: string, private readonly gql: typeof graphql, private readonly logger: ActionLogger, private readonly mergeMethod: MergeMethod) {
 
     }
 
     async enableAutoMerge() {
         const mergeRequest = await this.gql<{ enablePullRequestAutoMerge: { clientMutationId: unknown } }>(ENABLE_AUTO_MERGE,
             {
-                prId: this.nodeId
+                prId: this.nodeId,
+                method: this.mergeMethod
             });
         this.logger.info("Succesfully enabled auto-merge");
     }

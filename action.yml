@@ -8,6 +8,10 @@ inputs:
   GITHUB_TOKEN:
     required: true
     description: The token to access the repo
+  MERGE_METHOD:
+    required: false
+    description: The merge method to use. Must be one of MERGE, SQUASH or REBASE.
+    default: SQUASH
 outputs:
   repo:
     description: 'The name of the repo in owner/repo pattern'
