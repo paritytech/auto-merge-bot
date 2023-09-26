@@ -44,8 +44,9 @@ export class Bot {
             const { login } = this.comment.user;
             const org = this.commentsApi.pullData.owner;
             this.logger.warn("User is not allowed to trigger the bot." + `He does not *publicly* belongs to the org: https://github.com/orgs/${org}/people`);
+            await this.commentsApi.reactToComment(this.comment.id, "-1");
             await this.commentsApi.comment("## Auto-Merge-Bot\n" + `User @${login} is not the author of the PR and does not [*publicly* belong to the org \`${org}\`](https://github.com/orgs/${org}/people).\n\n` +
-                "Only author or *public* org members can trigger the bot.")
+                "Only author or *public* org members can trigger the bot.");
             return;
         }
         this.logger.debug("User can trigger bot");
