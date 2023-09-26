@@ -5,8 +5,8 @@ import { PullRequestMergeMethod } from "@octokit/graphql-schema";
 
 // https://docs.github.com/en/graphql/reference/mutations#enablepullrequestautomerge
 export const ENABLE_AUTO_MERGE = `
-mutation($prId: ID!, $method: PullRequestMergeMethod!) {
-    enablePullRequestAutoMerge(input: {pullRequestId: $prId, mergeMethod: $method}) {
+mutation($prId: ID!, $mergeMethod: PullRequestMergeMethod!) {
+    enablePullRequestAutoMerge(input: {pullRequestId: $prId, mergeMethod: $mergeMethod}) {
         clientMutationId
          }
 }`;
@@ -30,7 +30,7 @@ export class Merger {
         const mergeRequest = await this.gql<{ enablePullRequestAutoMerge: { clientMutationId: unknown } }>(ENABLE_AUTO_MERGE,
             {
                 prId: this.nodeId,
-                method: this.mergeMethod
+                mergeMethod: this.mergeMethod
             });
         this.logger.info("Succesfully enabled auto-merge");
     }
