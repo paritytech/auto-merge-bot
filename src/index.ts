@@ -24,6 +24,11 @@ const repo = getRepo(context);
 
 setOutput("repo", `${repo.owner}/${repo.repo}`);
 
+console.log("Event received", context.payload);
+console.log("Job", context.job);
+console.log("Action", context.action);
+console.log("event name", context.eventName)
+
 if (context.payload.pull_request) {
   const token = getInput("GITHUB_TOKEN", { required: true });
   const api = new PullRequestApi(getOctokit(token), generateCoreLogger());
