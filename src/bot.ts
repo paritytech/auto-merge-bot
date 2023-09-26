@@ -39,9 +39,11 @@ export const runOnComment = async (comment: IssueComment, logger: ActionLogger, 
         }
     } else {
         await api.comment(`## Auto-Merge-Bot
+
         ### Available commands
+
         - \`/bot merge\`: Enabled auto-merge for Pull Request
-        - \'/bot cancel\': Cancels auto-merge for Pull Request
-        """`);
+        - \`/bot cancel\`: Cancels auto-merge for Pull Request
+        `);
     }
 }
