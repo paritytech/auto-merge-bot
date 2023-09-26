@@ -14,8 +14,8 @@ query($organization: String!, $repo: String!, $number: Int!) {
 }`;
 
 export const ENABLE_AUTO_MERGE = `
-mutation($pullRequestId: ID!) {
-    enablePullRequestAutoMerge(input: {pullRequestId: $pullRequestId, mergeMethod: SQUASH}) {
+mutation($prId: ID!) {
+    enablePullRequestAutoMerge(input: {pullRequestId: $prId, mergeMethod: SQUASH}) {
         clientMutationId
          }
 }`
@@ -45,7 +45,7 @@ export const runOnComment = async (comment: IssueComment, logger: ActionLogger, 
             logger.info("Id is " + query.repository.pullRequest.id);
 
             const merge = await gql(ENABLE_AUTO_MERGE, {
-                pullRequestID: query.repository.pullRequest.id
+                prId: query.repository.pullRequest.id
             })
             logger.info("Returned " + JSON.stringify(merge));
         }
