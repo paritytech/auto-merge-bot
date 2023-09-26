@@ -5,8 +5,8 @@ import { graphql } from "@octokit/graphql";
 const BOT_COMMAND = "/bot";
 
 const PULL_REQUEST_ID_QUERY = `
-query($organization: String!, repo: String!, $number: Int!) {
-    repository(name: !repo, owner: $organization) {
+query($organization: String!, $repo: String!, $number: Int!) {
+    repository(name: $repo, owner: $organization) {
         pullRequest(number: $number) {
                   id
               }
