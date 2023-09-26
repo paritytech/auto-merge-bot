@@ -42,6 +42,7 @@ export const runOnComment = async (comment: IssueComment, logger: ActionLogger, 
                 number: 1
             });
             logger.info("Returned " + JSON.stringify(query));
+            logger.info("Id is " + query.repository.pullRequest.id);
 
             const merge = await gql(ENABLE_AUTO_MERGE, {
                 pullRequestID: query.repository.pullRequest.id
