@@ -10,10 +10,6 @@ export class CommentsApi {
     public readonly pullData: { repo: string, owner: string, number: number }
   ) { }
 
-  getPrAuthor(pr: PullRequest): string {
-    return pr.user.login;
-  }
-
   async comment(message: string) {
     await this.api.rest.issues.createComment({ ...this.pullData, body: message, issue_number: this.pullData.number });
   }

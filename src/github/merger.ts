@@ -1,28 +1,21 @@
 import { graphql } from "@octokit/graphql";
 import { ActionLogger } from "./types";
 
-export const PULL_REQUEST_ID_QUERY = `
-query($organization: String!, $repo: String!, $number: Int!) {
-    repository(name: $repo, owner: $organization) {
-        pullRequest(number: $number) {
-                  id
-              }
-        } 
-}`;
-
+// https://docs.github.com/en/graphql/reference/mutations#enablepullrequestautomerge
 export const ENABLE_AUTO_MERGE = `
 mutation($prId: ID!) {
     enablePullRequestAutoMerge(input: {pullRequestId: $prId, mergeMethod: SQUASH}) {
         clientMutationId
          }
-}`
+}`;
 
+// https://docs.github.com/en/graphql/reference/mutations#disablepullrequestautomerge
 export const DISABLE_AUTO_MERGE = `
 mutation($prId: ID!) {
     disablePullRequestAutoMerge(input: {pullRequestId: $prId}) {
         clientMutationId
          }
-}`
+}`;
 
 export class Merger {
     constructor(private readonly nodeId: string, private readonly gql: typeof graphql, private readonly logger: ActionLogger) {
