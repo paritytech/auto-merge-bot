@@ -34,6 +34,7 @@ logger.info(`Received event of typer ${context.eventName}`);
 
 if (context.eventName !== "issue_comment") {
   throw new Error("Wrong event type");
+  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
 } else if (!context.payload.issue?.pull_request) {
   throw new Error("Comment happened on an issue, not a PR");
 }

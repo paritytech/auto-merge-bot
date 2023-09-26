@@ -8,7 +8,7 @@ export class CommentsApi {
     public readonly pullData: { repo: string; owner: string; number: number },
   ) {}
 
-  async comment(message: string) {
+  async comment(message: string): Promise<void> {
     await this.api.rest.issues.createComment({
       ...this.pullData,
       body: message,
