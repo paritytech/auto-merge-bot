@@ -13,7 +13,7 @@ query($organization: String!, repo: String!, $number: Int!) {
         } 
 }`;
 
-export const runOnComment = (comment: IssueComment, logger: ActionLogger, gql: typeof graphql,) => {
+export const runOnComment = (comment: IssueComment, logger: ActionLogger, gql: typeof graphql) => {
     logger.info("Running action on comment: " + comment.html_url);
     if (!comment.body.startsWith(BOT_COMMAND)) {
         logger.info(`Ignoring comment ${comment.html_url} as it does not start with '${BOT_COMMAND}'`);
@@ -26,18 +26,18 @@ export const runOnComment = (comment: IssueComment, logger: ActionLogger, gql: t
     }
 
     if (command === "merge") {
-        try{
-        logger.info("Bot will enabled auto merge for this PR!");
-        const query = gql(PULL_REQUEST_ID_QUERY, {
-            organization: "paritytech-stg",
-            repo: "auto-merge-bot",
-            number: 1
-        });
-        logger.info("Returned " + JSON.stringify(query));
-    }
-    catch(e) {
-        logger.error(e as Error);
-        throw e;
-    }
+        try {
+            logger.info("Bot will enabled auto merge for this PR!");
+            const query = gql(PULL_REQUEST_ID_QUERY, {
+                organization: "paritytech-stg",
+                repo: "auto-merge-bot",
+                number: 1
+            });
+            logger.info("Returned " + JSON.stringify(query));
+        }
+        catch (e) {
+            logger.error(e as Error);
+            throw e;
+        }
     }
 }

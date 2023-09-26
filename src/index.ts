@@ -1,11 +1,13 @@
 import { getInput, info, setOutput } from "@actions/core";
 import { context, getOctokit } from "@actions/github";
 import { Context } from "@actions/github/lib/context";
+import { IssueComment } from "@octokit/webhooks-types";
 import { PullRequest } from "@octokit/webhooks-types";
 
 import { PullRequestApi } from "./github/pullRequest";
 import { generateCoreLogger } from "./util";
 import { runOnComment } from "./bot";
+import { graphql } from "@octokit/graphql/dist-types/types";
 
 const getRepo = (ctx: Context) => {
   let repo = getInput("repo", { required: false });
@@ -37,10 +39,10 @@ if (context.eventName !== "issue_comment") {
 }
 
 if (context.payload.comment) {
-  // const token = getInput("GITHUB_TOKEN", { required: true });
+  const token = getInput("token", { required: true });
   const logger = generateCoreLogger();
-  // @ts-ignore
-  runOnComment(context.payload.comment, logger);
+  const graphql = getOctokit(token).graphql.defaults({ headers: { authorization: `token ${token}` } }) as graphql;
+  runOnComment(context.payload.comment as unknown as IssueComment, logger, graphql);
 } else {
   console.error("No 'comment' object in the payload!");
 }
