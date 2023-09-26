@@ -4,7 +4,7 @@ import { graphql } from "@octokit/graphql";
 
 const BOT_COMMAND = "/bot";
 
-const PULL_REQUEST_ID_QUERY = `
+export const PULL_REQUEST_ID_QUERY = `
 query($organization: String!, $repo: String!, $number: Int!) {
     repository(name: $repo, owner: $organization) {
         pullRequest(number: $number) {
@@ -13,9 +13,9 @@ query($organization: String!, $repo: String!, $number: Int!) {
         } 
 }`;
 
-const ENABLE_AUTO_MERGE = `
-mutation($pullRequestID: ID!) {
-    enablePullRequestAutoMerge(input: {pullRequestId: "$pullRequestID", mergeMethod: SQUASH}) {
+export const ENABLE_AUTO_MERGE = `
+mutation($pullRequestId: ID!) {
+    enablePullRequestAutoMerge(input: {pullRequestId: $pullRequestId, mergeMethod: SQUASH}) {
         clientMutationId
          }
 }`
