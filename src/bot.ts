@@ -28,12 +28,12 @@ export const runOnComment = async (comment: IssueComment, logger: ActionLogger, 
     try {
         switch (command as Command) {
             case "merge":
-                await api.reactToComment(comment.id);
+                await api.reactToComment(comment.id, "+1");
                 await merger.enableAutoMerge();
                 await api.comment("Enabled `auto-merge` in Pull Request");
                 break;
             case "cancel":
-                await api.reactToComment(comment.id);
+                await api.reactToComment(comment.id, "+1");
                 await merger.disableAutoMerge();
                 await api.comment("Disabled `auto-merge` in Pull Request");
                 break;
@@ -41,7 +41,8 @@ export const runOnComment = async (comment: IssueComment, logger: ActionLogger, 
                 await api.comment('## Auto-Merge-Bot\n' + botCommands);
                 break;
             default: {
-                await api.comment('## Auto-Merge-Bot\n' + `Command '${command}' not recognized.\n\n` + botCommands);
+                await api.reactToComment(comment.id, "confused");
+                await api.comment('## Auto-Merge-Bot\n' + `Command \`${command}\` not recognized.\n\n` + botCommands);
             }
         }
     } catch (e) {
