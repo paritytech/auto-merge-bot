@@ -2,6 +2,12 @@
 
 Bot which enables or disable [`auto-merge`](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/incorporating-changes-from-a-pull-request/automatically-merging-a-pull-request) in a repository.
 
+## Why?
+
+This action was developed to help external parties merge their own Pull Requests.
+
+If an external party makes a PR, and it is approved, they still can not merge it. This bot gives them the ability to enable the `auto-merge` function so, once their PR gets approved, it is merged.
+
 ## Configuration
 Be sure that **Allow auto-merge** is enabled in the repository options.
 
@@ -47,6 +53,6 @@ To trigger the bot, you need to write a comment in a Pull Request where the acti
 
 The bot can only be triggered by the author of the PR or by users who *publicly* belongs to the organization of the repository.
 
-By publicly, I refer to the members of an organization which can be see by external parties. If you are not sure if you are part of an organization, simply open https://github.com/orgs/**your_organization**/people in a private window. If you don’t see your name there, you are not a public member.
+By publicly, I refer to the members of an organization which can be seen by external parties. If you are not sure if you are part of an organization, simply open https://github.com/orgs/**your_organization**/people in a private window. If you don’t see your name there, you are not a public member.
 
 Find related docs here: [ Publicizing or hiding organization membership](https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-personal-account-on-github/managing-your-membership-in-organizations/publicizing-or-hiding-organization-membership).
