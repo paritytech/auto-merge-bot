@@ -13,6 +13,13 @@ query($organization: String!, $repo: String!, $number: Int!) {
         } 
 }`;
 
+const ENABLE_AUTO_MERGE = `
+mutation($pullRequestID: ID!) {
+    enablePullRequestAutoMerge(input: {pullRequestId: "$pullRequestID", mergeMethod: SQUASH}) {
+        clientMutationId
+         }
+}`
+
 export const runOnComment = async (comment: IssueComment, logger: ActionLogger, gql: typeof graphql) => {
     logger.info("Running action on comment: " + comment.html_url);
     if (!comment.body.startsWith(BOT_COMMAND)) {
@@ -28,12 +35,18 @@ export const runOnComment = async (comment: IssueComment, logger: ActionLogger, 
     if (command === "merge") {
         try {
             logger.info("Bot will enabled auto merge for this PR!");
-            const query = await gql(PULL_REQUEST_ID_QUERY, {
+            type returnType = { repository: {pullRequest: {id:string}} };
+            const query = await gql<returnType>(PULL_REQUEST_ID_QUERY, {
                 organization: "paritytech-stg",
                 repo: "auto-merge-bot",
                 number: 1
             });
             logger.info("Returned " + JSON.stringify(query));
+
+            const merge = await gql(ENABLE_AUTO_MERGE, {
+                pullRequestID: query.repository.pullRequest.id
+            })
+            logger.info("Returned " + JSON.stringify(merge));
         }
         catch (e) {
             logger.error(e as Error);
