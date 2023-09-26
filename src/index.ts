@@ -5,6 +5,7 @@ import { PullRequest } from "@octokit/webhooks-types";
 
 import { PullRequestApi } from "./github/pullRequest";
 import { generateCoreLogger } from "./util";
+import { runOnComment } from "./bot";
 
 const getRepo = (ctx: Context) => {
   let repo = getInput("repo", { required: false });
@@ -35,9 +36,11 @@ if (context.eventName !== "issue_comment") {
   console.log("Comment happened on an issue, not a PR");
 }
 
-if (context.payload.pull_request) {
+if (context.payload.comment) {
   const token = getInput("GITHUB_TOKEN", { required: true });
-  const api = new PullRequestApi(getOctokit(token), generateCoreLogger());
-  const author = api.getPrAuthor(context.payload.pull_request as PullRequest);
-  info("Author of the PR is " + author);
+  const logger = generateCoreLogger();
+  // @ts-ignore
+  runOnComment(context.payload.comment, logger);
+} else {
+  console.error("No 'comment' object in the payload!");
 }
