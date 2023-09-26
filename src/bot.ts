@@ -78,37 +78,3 @@ export class Bot {
 
     }
 }
-
-export const runOnComment = async (comment: IssueComment, logger: ActionLogger, merger: Merger, api: CommentsApi) => {
-    logger.info("Running action on comment: " + comment.html_url);
-    if (!comment.body.startsWith(BOT_COMMAND)) {
-        logger.info(`Ignoring comment ${comment.html_url} as it does not start with '${BOT_COMMAND}'`);
-        return;
-    }
-
-    const [_, command] = comment.body.split(" ");
-    try {
-        switch (command as Command) {
-            case "merge":
-                await api.reactToComment(comment.id, "+1");
-                await merger.enableAutoMerge();
-                await api.comment("Enabled `auto-merge` in Pull Request");
-                break;
-            case "cancel":
-                await api.reactToComment(comment.id, "+1");
-                await merger.disableAutoMerge();
-                await api.comment("Disabled `auto-merge` in Pull Request");
-                break;
-            case "help":
-                await api.comment('## Auto-Merge-Bot\n' + botCommands);
-                break;
-            default: {
-                await api.reactToComment(comment.id, "confused");
-                await api.comment('## Auto-Merge-Bot\n' + `Command \`${command}\` not recognized.\n\n` + botCommands);
-            }
-        }
-    } catch (e) {
-        logger.error(e as Error);
-        throw e;
-    }
-}

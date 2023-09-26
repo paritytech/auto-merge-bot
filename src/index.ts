@@ -6,7 +6,7 @@ import { PullRequest } from "@octokit/webhooks-types";
 
 import { CommentsApi } from "./github/comments";
 import { generateCoreLogger } from "./util";
-import { runOnComment } from "./bot";
+import { Bot } from "./bot";
 import { graphql } from "@octokit/graphql/dist-types/types";
 import { Merger } from "./github/merger";
 
@@ -47,7 +47,8 @@ if (context.payload.comment) {
   const commentsApi = new CommentsApi(getOctokit(token), logger, { ...repo, number: issue.number });
   const gql = getOctokit(token).graphql.defaults({ headers: { authorization: `token ${token}` } }) as graphql;
   const merger = new Merger(issue.node_id, gql, logger);
-  runOnComment(comment, logger, merger, commentsApi).then(() => logger.info("Finished!")).catch(setFailed);
+  const bot = new Bot(comment, issue, logger, commentsApi);
+  bot.run(merger).then(() => logger.info("Finished!")).catch(setFailed);
 } else {
   console.error("No 'comment' object in the payload!");
 }
