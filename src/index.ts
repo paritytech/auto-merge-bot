@@ -27,7 +27,13 @@ setOutput("repo", `${repo.owner}/${repo.repo}`);
 console.log("Event received", context.payload);
 console.log("Job", context.job);
 console.log("Action", context.action);
-console.log("event name", context.eventName)
+console.log("event name", context.eventName);
+
+if (context.eventName !== "issue_comment") {
+  throw new Error("Wrong event type");
+} else if (!context.payload.issue?.pull_request) {
+  console.log("Comment happened on an issue, not a PR");
+}
 
 if (context.payload.pull_request) {
   const token = getInput("GITHUB_TOKEN", { required: true });
