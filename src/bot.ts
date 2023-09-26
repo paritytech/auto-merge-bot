@@ -20,7 +20,7 @@ For more information see the [documentation](https://github.com/paritytech/auto-
 export class Bot {
     constructor(private readonly comment: IssueComment, private readonly pr: Issue, private readonly logger: ActionLogger, private readonly commentsApi: CommentsApi) { }
 
-    async canTriggerBot() {
+    async canTriggerBot():Promise<boolean> {
         this.logger.debug("Evaluating if user can trigger the bot");
         const author = this.pr.user.id;
         if (this.comment.user.id === author) {
@@ -43,7 +43,7 @@ export class Bot {
         if (!await this.canTriggerBot()) {
             const { login } = this.comment.user;
             const org = this.commentsApi.pullData.owner;
-            this.logger.warn("User is not allowed to trigger the bot. " + `He does not *publicly* belongs to the org: https://github.com/orgs/${org}/people`);
+            this.logger.warn("User is not allowed to trigger the bot. " + `He is not the author of the PR and does not *publicly* belong to the org: https://github.com/orgs/${org}/people`);
             await this.commentsApi.reactToComment(this.comment.id, "-1");
             await this.commentsApi.comment("## Auto-Merge-Bot\n" + `User @${login} is not the author of the PR and does not [*publicly* belong to the org \`${org}\`](https://github.com/orgs/${org}/people).\n\n` +
                 "Only author or *public* org members can trigger the bot.");

@@ -22,10 +22,16 @@ export class CommentsApi {
     await this.api.rest.reactions.createForIssueComment({ ...this.pullData, comment_id: commentId, content: reaction });
   }
 
-  async userBelongsToOrg(username:string):Promise<boolean> {
-    const check = await this.api.rest.orgs.listForUser({username, per_page: 100});
-    const orgs = check.data.map(org => org.login);
-    this.logger.info("User belong to the following orgs: " + JSON.stringify(orgs));
-    return orgs.some((org) => org === this.pullData.owner);
+  async userBelongsToOrg(username: string): Promise<boolean> {
+    const org = this.pullData.owner;
+    this.logger.debug(`Checking if user ${username} belongs to ${org} as a public user.`);
+    // If the user does not belong to the org, this will throw an http error
+    try {
+      const { status } = await this.api.rest.orgs.checkPublicMembershipForUser({org, username});
+      return status === 204;
+    } catch (error){
+      this.logger.warn(error as Error);
+      return false;
+    }
   }
 }
