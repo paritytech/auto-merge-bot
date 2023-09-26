@@ -4,7 +4,7 @@ import { Context } from "@actions/github/lib/context";
 import { Issue, IssueComment } from "@octokit/webhooks-types";
 import { PullRequest } from "@octokit/webhooks-types";
 
-import { PullRequestApi } from "./github/pullRequest";
+import { CommentsApi } from "./github/comments";
 import { generateCoreLogger } from "./util";
 import { runOnComment } from "./bot";
 import { graphql } from "@octokit/graphql/dist-types/types";
@@ -44,10 +44,10 @@ if (context.payload.comment) {
   const comment = context.payload.comment as unknown as IssueComment;
   const issue = context.payload.issue as unknown as Issue;
   const logger = generateCoreLogger();
-  const api = new PullRequestApi(getOctokit(token), logger, { ...repo, number: issue.number });
+  const commentsApi = new CommentsApi(getOctokit(token), logger, { ...repo, number: issue.number });
   const gql = getOctokit(token).graphql.defaults({ headers: { authorization: `token ${token}` } }) as graphql;
   const merger = new Merger(issue.node_id, gql, logger);
-  runOnComment(comment, logger, merger, api).then(() => logger.info("Finished!")).catch(setFailed);
+  runOnComment(comment, logger, merger, commentsApi).then(() => logger.info("Finished!")).catch(setFailed);
 } else {
   console.error("No 'comment' object in the payload!");
 }

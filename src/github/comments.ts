@@ -3,11 +3,11 @@ import { PullRequest } from "@octokit/webhooks-types";
 import { ActionLogger, GitHubClient } from "./types";
 
 /** API class that uses the default token to access the data from the pull request and the repository */
-export class PullRequestApi {
+export class CommentsApi {
   constructor(
     private readonly api: GitHubClient,
     private readonly logger: ActionLogger,
-    private readonly pullData: { repo: string, owner: string, number: number }
+    public readonly pullData: { repo: string, owner: string, number: number }
   ) { }
 
   getPrAuthor(pr: PullRequest): string {
@@ -20,5 +20,12 @@ export class PullRequestApi {
 
   async reactToComment(commentId: number, reaction: "+1" | "confused"): Promise<void> {
     await this.api.rest.reactions.createForIssueComment({ ...this.pullData, comment_id: commentId, content: reaction });
+  }
+
+  async userBelongsToOrg(username:string):Promise<boolean> {
+    const check = await this.api.rest.orgs.listForUser({username, per_page: 100});
+    const orgs = check.data.map(org => org.login);
+    this.logger.info("User belong to the following orgs: " + JSON.stringify(orgs));
+    return orgs.some((org) => org === this.pullData.owner);
   }
 }
