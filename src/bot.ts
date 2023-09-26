@@ -26,6 +26,7 @@ export const runOnComment = (comment: IssueComment, logger: ActionLogger, gql: t
     }
 
     if (command === "merge") {
+        try{
         logger.info("Bot will enabled auto merge for this PR!");
         const query = gql(PULL_REQUEST_ID_QUERY, {
             organization: "paritytech-stg",
@@ -33,5 +34,10 @@ export const runOnComment = (comment: IssueComment, logger: ActionLogger, gql: t
             number: 1
         });
         logger.info("Returned " + JSON.stringify(query));
+    }
+    catch(e) {
+        logger.error(e as Error);
+        throw e;
+    }
     }
 }
