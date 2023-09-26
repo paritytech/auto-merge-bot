@@ -7,6 +7,15 @@ const BOT_COMMAND = "/bot";
 
 type Command = "merge" | "cancel";
 
+const botCommands = `
+**Available commands**
+
+- \`/bot merge\`: Enabled auto-merge for Pull Request
+- \`/bot cancel\`: Cancels auto-merge for Pull Request
+
+For more information see the [documentation](https://github.com/paritytech/auto-merge-bot)
+`;
+
 export const runOnComment = async (comment: IssueComment, logger: ActionLogger, merger:Merger, api: PullRequestApi) => {
     logger.info("Running action on comment: " + comment.html_url);
     if (!comment.body.startsWith(BOT_COMMAND)) {
@@ -40,12 +49,6 @@ export const runOnComment = async (comment: IssueComment, logger: ActionLogger, 
             throw e;
         }
     } else {
-        await api.comment(`## Auto-Merge-Bot
-
-        ### Available commands
-
-        - \`/bot merge\`: Enabled auto-merge for Pull Request
-        - \`/bot cancel\`: Cancels auto-merge for Pull Request
-        `);
+        await api.comment('## Auto-Merge-Bot\n' + botCommands);
     }
 }
