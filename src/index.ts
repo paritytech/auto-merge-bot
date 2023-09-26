@@ -37,7 +37,7 @@ if (context.eventName !== "issue_comment") {
 }
 
 if (context.payload.comment) {
-  const token = getInput("GITHUB_TOKEN", { required: true });
+  // const token = getInput("GITHUB_TOKEN", { required: true });
   const logger = generateCoreLogger();
   // @ts-ignore
   runOnComment(context.payload.comment, logger);
