@@ -1,4 +1,4 @@
-import { getInput, info, setOutput } from "@actions/core";
+import { getInput, info, setFailed, setOutput } from "@actions/core";
 import { context, getOctokit } from "@actions/github";
 import { Context } from "@actions/github/lib/context";
 import { IssueComment } from "@octokit/webhooks-types";
@@ -42,7 +42,7 @@ if (context.payload.comment) {
   const token = getInput("token", { required: true });
   const logger = generateCoreLogger();
   const graphql = getOctokit(token).graphql.defaults({ headers: { authorization: `token ${token}` } }) as graphql;
-  runOnComment(context.payload.comment as unknown as IssueComment, logger, graphql);
+  runOnComment(context.payload.comment as unknown as IssueComment, logger, graphql).then(() => logger.info("Finished!")).catch(setFailed);
 } else {
   console.error("No 'comment' object in the payload!");
 }
