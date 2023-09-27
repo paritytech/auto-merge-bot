@@ -23,8 +23,8 @@ on:
 jobs:
   set-auto-merge:
     runs-on: ubuntu-latest
-    # Important! This forces the job to run only on Pull Requests
-    if: ${{ github.event.issue.pull_request }}
+    # Important! This forces the job to run only on comments on Pull Requests that starts with '/bot'
+    if: ${{ github.event.issue.pull_request && startsWith(github.event.comment.body, '/bot') }}
     steps:
       - name: Set auto merge
         uses: paritytech/auto-merge-bot@main
