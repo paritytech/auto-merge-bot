@@ -26,7 +26,7 @@ export class Bot {
     private readonly commentsApi: CommentsApi,
   ) {}
 
-  /** Verifies if the author is the also the author of the PR or a member of the org */
+  /** Verifies if the author is the author of the PR or a member of the org */
   async canTriggerBot(): Promise<boolean> {
     this.logger.debug("Evaluating if user can trigger the bot");
     const author = this.pr.user.id;
