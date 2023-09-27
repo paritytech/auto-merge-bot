@@ -1,0 +1,17 @@
+name: Auto Merge Bot
+
+on:
+  # GitHub considers PRs as issues
+  issue_comment:
+    types: [created]
+
+jobs:
+  set-auto-merge:
+    runs-on: ubuntu-latest
+    # Important! This forces the job to run only on Pull Requests
+    if: ${{ github.event.issue.pull_request && startsWith(github.event.comment.body, '/bot') }}
+    steps:
+      - name: Set auto merge
+        uses: paritytech/auto-merge-bot@main
+        with:
+          GITHUB_TOKEN: '${{ github.token }}'
