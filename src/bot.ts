@@ -24,7 +24,7 @@ export class Bot {
     private readonly pr: Issue,
     private readonly logger: ActionLogger,
     private readonly commentsApi: CommentsApi,
-    private readonly whitelistedUsers: string[],
+    private readonly allowlistedUsers: string[],
     private readonly actionUrl: string,
   ) {}
 
@@ -38,12 +38,12 @@ export class Bot {
     }
     this.logger.debug("Author of comment is not the author of the PR");
 
-    if (this.whitelistedUsers && this.whitelistedUsers.length > 0) {
-      if (this.whitelistedUsers.indexOf(this.comment.user.login) > -1) {
-        this.logger.debug("User belongs to whitelisted users");
+    if (this.allowlistedUsers && this.allowlistedUsers.length > 0) {
+      if (this.allowlistedUsers.indexOf(this.comment.user.login) > -1) {
+        this.logger.debug("User belongs to allowlisted users");
         return true;
       }
-      this.logger.debug("User does not belong to list of whitelisted users");
+      this.logger.debug("User does not belong to list of allowlisted users");
     }
 
     return await this.commentsApi.userBelongsToOrg(this.comment.user.login);

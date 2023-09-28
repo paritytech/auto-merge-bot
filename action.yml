@@ -15,7 +15,7 @@ inputs:
   SILENT:
     required: false
     description: If true, the bot will not post a comment on the PR.
-  WHITELISTED_USERS:
+  ALLOWLIST:
     required: false
     description: List of users which are allowed to use the bot. Separated by commas (abc,def,ghi)
 outputs:

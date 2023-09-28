@@ -6,8 +6,8 @@ export function generateCoreLogger(): ActionLogger {
   return { info, debug, warn: warning, error };
 }
 
-export function getWhitelistedUsers(): string[] {
-  const users = getInput("WHITELISTED_USERS", { required: false });
+export function getallowlistedUsers(): string[] {
+  const users = getInput("ALLOWLIST", { required: false });
   if (users) {
     return users.split(",");
   }

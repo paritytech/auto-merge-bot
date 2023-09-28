@@ -8,7 +8,7 @@ import { Issue, IssueComment } from "@octokit/webhooks-types";
 import { Bot } from "./bot";
 import { CommentsApi } from "./github/comments";
 import { Merger } from "./github/merger";
-import { generateCoreLogger, getWhitelistedUsers } from "./util";
+import { generateCoreLogger, getallowlistedUsers } from "./util";
 
 const getRepo = (ctx: Context) => {
   let repo = getInput("repo", { required: false });
@@ -60,7 +60,7 @@ logger.info(
   }`,
 );
 
-const whitelistedUsers = getWhitelistedUsers();
+const allowlistedUsers = getallowlistedUsers();
 
 const actionUrl = `${context.serverUrl}/${repo.owner}/${repo.repo}/actions/runs/${context.runId}`;
 
@@ -86,7 +86,7 @@ if (context.payload.comment) {
     issue,
     logger,
     commentsApi,
-    whitelistedUsers,
+    allowlistedUsers,
     actionUrl,
   );
   bot
