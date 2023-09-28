@@ -45,6 +45,9 @@ You can find all the inputs in [the action file](./action.yml), but let's walk t
 		- Make sure that the type of merge you selected is available in the repository merge options.
 - `SILENT`: If the bot should be silent and not comment when enabling/disabling auto-merge.
 	- **Optional**: Defaults to `false`.
+- `WHITELISTED_USERS`: List of user accounts which are allowed to use the bot aside from the author and org members.
+	- **Optional**
+	- Must be a comma separated value: `user-1,user-2,user-3`.
 
 ## Usage
 
