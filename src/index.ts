@@ -60,6 +60,8 @@ logger.info(
   }`,
 );
 
+const actionUrl = `${context.serverUrl}/${repo.owner}/${repo.repo}/actions/runs/${context.runId}`;
+
 if (context.payload.comment) {
   const token = getInput("GITHUB_TOKEN", { required: true });
   const comment = context.payload.comment as unknown as IssueComment;

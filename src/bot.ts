@@ -24,7 +24,8 @@ export class Bot {
     private readonly pr: Issue,
     private readonly logger: ActionLogger,
     private readonly commentsApi: CommentsApi,
-  ) {}
+    private readonly actionUrl: string,
+  ) { }
 
   /** Verifies if the author is the author of the PR or a member of the org */
   async canTriggerBot(): Promise<boolean> {
@@ -109,6 +110,9 @@ export class Bot {
       }
     } catch (e) {
       this.logger.error(e as Error);
+
+      // If possible, let's try to comment about an issue
+      await this.commentsApi.comment("There was a problem running the action.\n\n" + "❌😵❌" + `Please see more at the [logs](${this.actionUrl})`)
       throw e;
     }
   }
