@@ -24,6 +24,7 @@ export class Bot {
     private readonly pr: Issue,
     private readonly logger: ActionLogger,
     private readonly commentsApi: CommentsApi,
+    private readonly actionUrl: string,
   ) {}
 
   /** Verifies if the author is the author of the PR or a member of the org */
@@ -109,6 +110,14 @@ export class Bot {
       }
     } catch (e) {
       this.logger.error(e as Error);
+
+      // If possible, let's try to comment about an issue
+      await this.commentsApi.comment(
+        "### There was a problem running the action.\n\n" +
+          "❌😵❌\n\n" +
+          `Please find more information in the [logs](${this.actionUrl}).`,
+        true,
+      );
       throw e;
     }
   }
