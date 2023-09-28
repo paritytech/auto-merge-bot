@@ -19,6 +19,14 @@ mutation($prId: ID!) {
     }
 }`;
 
+// https://docs.github.com/en/graphql/reference/mutations#mergepullrequest
+export const MERGE_PULL_REQUEST = `
+mutation($prId: ID!, $mergeMethod: PullRequestMergeMethod!) {
+  mergePullRequest(input: {pullRequestId: $prId, mergeMethod: $mergeMethod}) {
+      clientMutationId
+  }
+}`;
+
 export type MergeMethod = "SQUASH" | "MERGE" | "REBASE";
 
 export class Merger {
@@ -30,13 +38,34 @@ export class Merger {
   ) {}
 
   async enableAutoMerge(): Promise<void> {
-    await this.gql<{
-      enablePullRequestAutoMerge: { clientMutationId: unknown };
-    }>(ENABLE_AUTO_MERGE, {
-      prId: this.nodeId,
-      mergeMethod: this.mergeMethod,
-    });
-    this.logger.info("Succesfully enabled auto-merge");
+    try {
+      await this.gql<{
+        enablePullRequestAutoMerge: { clientMutationId: unknown };
+      }>(ENABLE_AUTO_MERGE, {
+        prId: this.nodeId,
+        mergeMethod: this.mergeMethod,
+      });
+      this.logger.info("Succesfully enabled auto-merge");
+    } catch (error) {
+      this.logger.warn(error as Error);
+      if (
+        error instanceof Error &&
+        error.message.includes("Pull request is in clean status")
+      ) {
+        this.logger.warn(
+          "Pull Request is ready to merge. Running merge command instead",
+        );
+        await this.gql<{
+          mergePullRequest: { clientMutationId: unknown };
+        }>(MERGE_PULL_REQUEST, {
+          prId: this.nodeId,
+          mergeMethod: this.mergeMethod,
+        });
+        this.logger.info("Succesfully merged PR");
+      } else {
+        throw error;
+      }
+    }
   }
 
   async disableAutoMerge(): Promise<void> {
