@@ -1,4 +1,4 @@
-import { getBooleanInput, getInput, setFailed, setOutput } from "@actions/core";
+import { getInput, setFailed, setOutput } from "@actions/core";
 import { context, getOctokit } from "@actions/github";
 import { Context } from "@actions/github/lib/context";
 import { graphql } from "@octokit/graphql/dist-types/types";
@@ -64,15 +64,20 @@ if (context.payload.comment) {
   const token = getInput("GITHUB_TOKEN", { required: true });
   const comment = context.payload.comment as unknown as IssueComment;
   const issue = context.payload.issue as unknown as Issue;
-  const commentsApi = new CommentsApi(getOctokit(token), logger, {
-    ...repo,
-    number: issue.number,
-  });
+  const commentsApi = new CommentsApi(
+    getOctokit(token),
+    logger,
+    {
+      ...repo,
+      number: issue.number,
+    },
+    silentMode,
+  );
   const gql = getOctokit(token).graphql.defaults({
     headers: { authorization: `token ${token}` },
   }) as graphql;
   const merger = new Merger(issue.node_id, gql, logger, getMergeMethod());
-  const bot = new Bot(comment, issue, logger, commentsApi, silentMode);
+  const bot = new Bot(comment, issue, logger, commentsApi);
   bot
     .run(merger)
     .then(() => logger.info("Finished!"))

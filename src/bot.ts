@@ -24,7 +24,6 @@ export class Bot {
     private readonly pr: Issue,
     private readonly logger: ActionLogger,
     private readonly commentsApi: CommentsApi,
-    private readonly silentMode: boolean = false,
   ) {}
 
   /** Verifies if the author is the author of the PR or a member of the org */
@@ -78,25 +77,24 @@ export class Bot {
         case undefined:
           await this.commentsApi.reactToComment(this.comment.id, "+1");
           await merger.enableAutoMerge();
-          if (!this.silentMode) {
-            await this.commentsApi.comment(
-              "Enabled `auto-merge` in Pull Request",
-            );
-          }
+          await this.commentsApi.comment(
+            "Enabled `auto-merge` in Pull Request",
+          );
           break;
         // `/merge cancel`
         case "cancel":
           await this.commentsApi.reactToComment(this.comment.id, "+1");
           await merger.disableAutoMerge();
-          if (!this.silentMode) {
-            await this.commentsApi.comment(
-              "Disabled `auto-merge` in Pull Request",
-            );
-          }
+          await this.commentsApi.comment(
+            "Disabled `auto-merge` in Pull Request",
+          );
           break;
         // `/merge help`
         case "help":
-          await this.commentsApi.comment("## Auto-Merge-Bot\n" + botCommands);
+          await this.commentsApi.comment(
+            "## Auto-Merge-Bot\n" + botCommands,
+            true,
+          );
           break;
         // `/merge anything else`
         default: {
@@ -105,6 +103,7 @@ export class Bot {
             "## Auto-Merge-Bot\n" +
               `Command \`${command}\` not recognized.\n\n` +
               botCommands,
+            true,
           );
         }
       }
