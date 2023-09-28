@@ -12,6 +12,9 @@ inputs:
     required: false
     description: The merge method to use. Must be one of MERGE, SQUASH or REBASE.
     default: SQUASH
+  SILENT:
+    required: false
+    description: If true, the bot will not post a comment on the PR.
 outputs:
   repo:
     description: 'The name of the repo in owner/repo pattern'
