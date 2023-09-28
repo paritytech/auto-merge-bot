@@ -19,6 +19,7 @@ mutation($prId: ID!) {
     }
 }`;
 
+// https://docs.github.com/en/graphql/reference/mutations#mergepullrequest
 export const MERGE_PULL_REQUEST = `
 mutation($prId: ID!, $mergeMethod: PullRequestMergeMethod!) {
   mergePullRequest(input: {pullRequestId: $prId, mergeMethod: $mergeMethod}) {
@@ -46,6 +47,7 @@ export class Merger {
       });
       this.logger.info("Succesfully enabled auto-merge");
     } catch (error) {
+      this.logger.warn(error as Error);
       if (
         error instanceof Error &&
         error.message.includes("Pull request is in clean status")
