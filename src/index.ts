@@ -1,4 +1,4 @@
-import { getInput, setFailed, setOutput } from "@actions/core";
+import { getInput, setFailed, setOutput, getBooleanInput } from "@actions/core";
 import { context, getOctokit } from "@actions/github";
 import { Context } from "@actions/github/lib/context";
 import { graphql } from "@octokit/graphql/dist-types/types";
@@ -51,6 +51,8 @@ const getMergeMethod = (): PullRequestMergeMethod => {
 
   return method;
 };
+
+const silentMode = getBooleanInput("SILENT", { required: false });
 
 if (context.payload.comment) {
   const token = getInput("GITHUB_TOKEN", { required: true });

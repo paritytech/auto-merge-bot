@@ -24,7 +24,8 @@ export class Bot {
     private readonly pr: Issue,
     private readonly logger: ActionLogger,
     private readonly commentsApi: CommentsApi,
-  ) {}
+    private readonly silentMode: boolean = false
+  ) { }
 
   /** Verifies if the author is the author of the PR or a member of the org */
   async canTriggerBot(): Promise<boolean> {
@@ -58,13 +59,13 @@ export class Bot {
       const org = this.commentsApi.pullData.owner;
       this.logger.warn(
         "User is not allowed to trigger the bot. " +
-          `He is not the author of the PR and does not *publicly* belong to the org: https://github.com/orgs/${org}/people`,
+        `He is not the author of the PR and does not *publicly* belong to the org: https://github.com/orgs/${org}/people`,
       );
       await this.commentsApi.reactToComment(this.comment.id, "-1");
       await this.commentsApi.comment(
         "## Auto-Merge-Bot\n" +
-          `User @${login} is not the author of the PR and does not [*publicly* belong to the org \`${org}\`](https://github.com/orgs/${org}/people).\n\n` +
-          "Only author or *public* org members can trigger the bot.",
+        `User @${login} is not the author of the PR and does not [*publicly* belong to the org \`${org}\`](https://github.com/orgs/${org}/people).\n\n` +
+        "Only author or *public* org members can trigger the bot.",
       );
       return;
     }
@@ -77,17 +78,21 @@ export class Bot {
         case undefined:
           await this.commentsApi.reactToComment(this.comment.id, "+1");
           await merger.enableAutoMerge();
-          await this.commentsApi.comment(
-            "Enabled `auto-merge` in Pull Request",
-          );
+          if (!this.silentMode) {
+            await this.commentsApi.comment(
+              "Enabled `auto-merge` in Pull Request",
+            );
+          }
           break;
         // `/merge cancel`
         case "cancel":
           await this.commentsApi.reactToComment(this.comment.id, "+1");
           await merger.disableAutoMerge();
-          await this.commentsApi.comment(
-            "Disabled `auto-merge` in Pull Request",
-          );
+          if (!this.silentMode) {
+            await this.commentsApi.comment(
+              "Disabled `auto-merge` in Pull Request",
+            );
+          }
           break;
         // `/merge help`
         case "help":
@@ -98,8 +103,8 @@ export class Bot {
           await this.commentsApi.reactToComment(this.comment.id, "confused");
           await this.commentsApi.comment(
             "## Auto-Merge-Bot\n" +
-              `Command \`${command}\` not recognized.\n\n` +
-              botCommands,
+            `Command \`${command}\` not recognized.\n\n` +
+            botCommands,
           );
         }
       }
