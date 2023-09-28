@@ -14,10 +14,7 @@ export class CommentsApi {
    * @param message Message to write in the comment
    * @param overrideSilentMode If silent mode should be overriden
    */
-  async comment(
-    message: string,
-    overrideSilentMode: boolean = false,
-  ): Promise<void> {
+  async comment(message: string, overrideSilentMode = false): Promise<void> {
     this.logger.info("Commenting: " + message);
     if (!this.silentMode || overrideSilentMode) {
       await this.api.rest.issues.createComment({

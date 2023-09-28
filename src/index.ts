@@ -8,7 +8,7 @@ import { Issue, IssueComment } from "@octokit/webhooks-types";
 import { Bot } from "./bot";
 import { CommentsApi } from "./github/comments";
 import { Merger } from "./github/merger";
-import { generateCoreLogger } from "./util";
+import { generateCoreLogger, getWhitelistedUsers } from "./util";
 
 const getRepo = (ctx: Context) => {
   let repo = getInput("repo", { required: false });
@@ -60,6 +60,8 @@ logger.info(
   }`,
 );
 
+const whitelistedUsers = getWhitelistedUsers();
+
 const actionUrl = `${context.serverUrl}/${repo.owner}/${repo.repo}/actions/runs/${context.runId}`;
 
 if (context.payload.comment) {
@@ -79,7 +81,14 @@ if (context.payload.comment) {
     headers: { authorization: `token ${token}` },
   }) as graphql;
   const merger = new Merger(issue.node_id, gql, logger, getMergeMethod());
-  const bot = new Bot(comment, issue, logger, commentsApi, actionUrl);
+  const bot = new Bot(
+    comment,
+    issue,
+    logger,
+    commentsApi,
+    whitelistedUsers,
+    actionUrl,
+  );
   bot
     .run(merger)
     .then(() => logger.info("Finished!"))

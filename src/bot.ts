@@ -24,6 +24,7 @@ export class Bot {
     private readonly pr: Issue,
     private readonly logger: ActionLogger,
     private readonly commentsApi: CommentsApi,
+    private readonly whitelistedUsers: string[],
     private readonly actionUrl: string,
   ) {}
 
@@ -36,6 +37,14 @@ export class Bot {
       return true;
     }
     this.logger.debug("Author of comment is not the author of the PR");
+
+    if (this.whitelistedUsers && this.whitelistedUsers.length > 0) {
+      if (this.whitelistedUsers.indexOf(this.comment.user.login) > -1) {
+        this.logger.debug("User belongs to whitelisted users");
+        return true;
+      }
+      this.logger.debug("User does not belong to list of whitelisted users");
+    }
 
     return await this.commentsApi.userBelongsToOrg(this.comment.user.login);
   }
@@ -71,7 +80,7 @@ export class Bot {
     }
     this.logger.debug("User can trigger bot");
 
-    const [_, command] = this.comment.body.split(" ");
+    const [, command] = this.comment.body.split(" ");
     try {
       switch (command as Command) {
         // Simply `/merge`
