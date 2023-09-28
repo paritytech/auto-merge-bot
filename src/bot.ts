@@ -115,7 +115,8 @@ export class Bot {
       await this.commentsApi.comment(
         "### There was a problem running the action.\n\n" +
           "❌😵❌\n\n" +
-          `Please see more at the [logs](${this.actionUrl})`,
+          `Please find more information in the [logs](${this.actionUrl}).`,
+        true,
       );
       throw e;
     }
