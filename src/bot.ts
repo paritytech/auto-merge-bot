@@ -4,16 +4,16 @@ import { CommentsApi } from "./github/comments";
 import { Merger } from "./github/merger";
 import { ActionLogger } from "./github/types";
 
-const BOT_COMMAND = "/bot";
+const BOT_COMMAND = "/merge";
 
 type Command = "merge" | "cancel" | "help";
 
 const botCommands = `
 **Available commands**
 
-- \`/bot merge\`: Enables auto-merge for Pull Request
-- \`/bot cancel\`: Cancels auto-merge for Pull Request
-- \`/bot help\`: Shows this menu
+- \`/merge\`: Enables auto-merge for Pull Request
+- \`/merge cancel\`: Cancels auto-merge for Pull Request
+- \`/merge help\`: Shows this menu
 
 For more information see the [documentation](https://github.com/paritytech/auto-merge-bot)
 `;
@@ -73,13 +73,15 @@ export class Bot {
     const [_, command] = this.comment.body.split(" ");
     try {
       switch (command as Command) {
-        case "merge":
+        // Simply `/merge`
+        case undefined:
           await this.commentsApi.reactToComment(this.comment.id, "+1");
           await merger.enableAutoMerge();
           await this.commentsApi.comment(
             "Enabled `auto-merge` in Pull Request",
           );
           break;
+        // `/merge cancel`
         case "cancel":
           await this.commentsApi.reactToComment(this.comment.id, "+1");
           await merger.disableAutoMerge();
@@ -87,9 +89,11 @@ export class Bot {
             "Disabled `auto-merge` in Pull Request",
           );
           break;
+        // `/merge help`
         case "help":
           await this.commentsApi.comment("## Auto-Merge-Bot\n" + botCommands);
           break;
+        // `/merge anything else`
         default: {
           await this.commentsApi.reactToComment(this.comment.id, "confused");
           await this.commentsApi.comment(
