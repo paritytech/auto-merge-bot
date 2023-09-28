@@ -52,4 +52,22 @@ describe("Comments", () => {
       });
     });
   });
+
+  describe("userBelongsToOrg", () => {
+    test("Should return false when http call fails", async () => {
+      api.rest.orgs.checkPublicMembershipForUser.mockRejectedValue(
+        "This is an error",
+      );
+      const userBelongs = await comments.userBelongsToOrg("example");
+      expect(userBelongs).toBeFalsy();
+    });
+
+    test("Should return false when http call returns 204", async () => {
+      api.rest.orgs.checkPublicMembershipForUser.mockResolvedValue({
+        status: 204,
+      } as never);
+      const userBelongs = await comments.userBelongsToOrg("example");
+      expect(userBelongs).toBeTruthy();
+    });
+  });
 });
