@@ -46,7 +46,9 @@ export class Bot {
       this.logger.debug("User does not belong to list of allowlisted users");
     }
 
-    this.logger.debug("Evaluating if author of comment is a public member of the org")
+    this.logger.debug(
+      "Evaluating if author of comment is a public member of the org",
+    );
     return await this.commentsApi.userBelongsToOrg(this.comment.user.login);
   }
 
