@@ -1,4 +1,4 @@
-import { getInput, setFailed, setOutput, getBooleanInput } from "@actions/core";
+import { getBooleanInput, getInput, setFailed, setOutput } from "@actions/core";
 import { context, getOctokit } from "@actions/github";
 import { Context } from "@actions/github/lib/context";
 import { graphql } from "@octokit/graphql/dist-types/types";
@@ -54,7 +54,11 @@ const getMergeMethod = (): PullRequestMergeMethod => {
 
 const silentMode = getBooleanInput("SILENT", { required: false });
 
-logger.info(`Silent mode is ${silentMode ? "enabled" : "disabled. Bot will comment actions"}`);
+logger.info(
+  `Silent mode is ${
+    silentMode ? "enabled" : "disabled. Bot will comment actions"
+  }`,
+);
 
 if (context.payload.comment) {
   const token = getInput("GITHUB_TOKEN", { required: true });
