@@ -52,7 +52,7 @@ const getMergeMethod = (): PullRequestMergeMethod => {
   return method;
 };
 
-const silentMode = getBooleanInput("SILENT", { required: false });
+const silentMode = getInput("SILENT", { required: false }) === "true";
 
 logger.info(
   `Silent mode is ${
