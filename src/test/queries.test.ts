@@ -1,6 +1,10 @@
 import { validate } from "@octokit/graphql-schema";
 
-import { DISABLE_AUTO_MERGE, ENABLE_AUTO_MERGE, MERGE_PULL_REQUEST } from "../github/merger";
+import {
+  DISABLE_AUTO_MERGE,
+  ENABLE_AUTO_MERGE,
+  MERGE_PULL_REQUEST,
+} from "../github/merger";
 
 describe("Schemas", () => {
   test("ENABLE_AUTO_MERGE", () => {
