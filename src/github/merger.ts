@@ -19,6 +19,13 @@ mutation($prId: ID!) {
     }
 }`;
 
+export const MERGE_PULL_REQUEST = `
+mutation($prId: ID!, $mergeMethod: PullRequestMergeMethod!) {
+  mergePullRequest(input: {pullRequestId: $prId, mergeMethod: $mergeMethod}) {
+      clientMutationId
+  }
+}`;
+
 export type MergeMethod = "SQUASH" | "MERGE" | "REBASE";
 
 export class Merger {
