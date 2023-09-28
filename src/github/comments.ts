@@ -6,14 +6,26 @@ export class CommentsApi {
     private readonly api: GitHubClient,
     private readonly logger: ActionLogger,
     public readonly pullData: { repo: string; owner: string; number: number },
+    private readonly silentMode: boolean = false,
   ) {}
 
-  async comment(message: string): Promise<void> {
-    await this.api.rest.issues.createComment({
-      ...this.pullData,
-      body: message,
-      issue_number: this.pullData.number,
-    });
+  /**
+   * Logs and writes a comments. Will only log if silentMode is true
+   * @param message Message to write in the comment
+   * @param overrideSilentMode If silent mode should be overriden
+   */
+  async comment(
+    message: string,
+    overrideSilentMode: boolean = false,
+  ): Promise<void> {
+    this.logger.info("Commenting: " + message);
+    if (!this.silentMode || overrideSilentMode) {
+      await this.api.rest.issues.createComment({
+        ...this.pullData,
+        body: message,
+        issue_number: this.pullData.number,
+      });
+    }
   }
 
   async reactToComment(

@@ -43,6 +43,8 @@ You can find all the inputs in [the action file](./action.yml), but let's walk t
 	- **Optional**: Defaults to `SQUASH`.
 	- Available types are `MERGE`, `REBASE` and `SQUASH`.
 		- Make sure that the type of merge you selected is available in the repository merge options.
+- `SILENT`: If the bot should be silent and not comment when enabling/disabling auto-merge.
+	- **Optional**: Defaults to `false`.
 
 ## Usage
 

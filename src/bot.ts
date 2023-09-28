@@ -91,7 +91,10 @@ export class Bot {
           break;
         // `/merge help`
         case "help":
-          await this.commentsApi.comment("## Auto-Merge-Bot\n" + botCommands);
+          await this.commentsApi.comment(
+            "## Auto-Merge-Bot\n" + botCommands,
+            true,
+          );
           break;
         // `/merge anything else`
         default: {
@@ -100,6 +103,7 @@ export class Bot {
             "## Auto-Merge-Bot\n" +
               `Command \`${command}\` not recognized.\n\n` +
               botCommands,
+            true,
           );
         }
       }

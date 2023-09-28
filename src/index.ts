@@ -52,14 +52,27 @@ const getMergeMethod = (): PullRequestMergeMethod => {
   return method;
 };
 
+const silentMode = getInput("SILENT", { required: false }) === "true";
+
+logger.info(
+  `Silent mode is ${
+    silentMode ? "enabled" : "disabled. Bot will comment actions"
+  }`,
+);
+
 if (context.payload.comment) {
   const token = getInput("GITHUB_TOKEN", { required: true });
   const comment = context.payload.comment as unknown as IssueComment;
   const issue = context.payload.issue as unknown as Issue;
-  const commentsApi = new CommentsApi(getOctokit(token), logger, {
-    ...repo,
-    number: issue.number,
-  });
+  const commentsApi = new CommentsApi(
+    getOctokit(token),
+    logger,
+    {
+      ...repo,
+      number: issue.number,
+    },
+    silentMode,
+  );
   const gql = getOctokit(token).graphql.defaults({
     headers: { authorization: `token ${token}` },
   }) as graphql;
