@@ -79,7 +79,7 @@ if (context.payload.comment) {
     headers: { authorization: `token ${token}` },
   }) as graphql;
   const merger = new Merger(issue.node_id, gql, logger, getMergeMethod());
-  const bot = new Bot(comment, issue, logger, commentsApi);
+  const bot = new Bot(comment, issue, logger, commentsApi, actionUrl);
   bot
     .run(merger)
     .then(() => logger.info("Finished!"))
