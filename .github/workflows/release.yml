@@ -26,7 +26,7 @@ jobs:
       # we may forget to set it back to main
       - name: Validate that action points to main branch
         run: |
-          BRANCH=$(yq '.jobs.review-approvals.steps[1].uses' $FILE_NAME | cut -d "@" -f2)
+          BRANCH=$(yq '.jobs.set-auto-merge.steps[0].uses' $FILE_NAME | cut -d "@" -f2)
           # If the branch is not the main branch
           if [ "$BRANCH" != "$GITHUB_BASE_REF" ]; then
             echo "Action points to $BRANCH. It has to point to $GITHUB_BASE_REF instead!"
