@@ -41,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.verification.outputs.VERSION }}
-      exists: ${{ steps.package_version.outputs.VERSION }}
+      exists: ${{ steps.checkTag.outputs.exists }}
     steps:
       - uses: actions/checkout@v3.3.0
       - name: Extract package.json version
