@@ -21,7 +21,7 @@ const detailCommands = `
 
 ${botCommands}
 </details> 
-`
+`;
 
 export class Bot {
   constructor(
