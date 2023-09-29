@@ -15,3 +15,5 @@ jobs:
         uses: paritytech/auto-merge-bot@main
         with:
           GITHUB_TOKEN: '${{ github.token }}'
+          ALLOWLIST: "bullrich,rzadp,mordamax,mutantcornholio"
+

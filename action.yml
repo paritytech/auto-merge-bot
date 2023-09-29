@@ -15,6 +15,9 @@ inputs:
   SILENT:
     required: false
     description: If true, the bot will not post a comment on the PR.
+  ALLOWLIST:
+    required: false
+    description: List of users which are allowed to use the bot. Separated by commas (abc,def,ghi)
 outputs:
   repo:
     description: 'The name of the repo in owner/repo pattern'

@@ -24,6 +24,7 @@ export class Bot {
     private readonly pr: Issue,
     private readonly logger: ActionLogger,
     private readonly commentsApi: CommentsApi,
+    private readonly allowlistedUsers: string[],
     private readonly actionUrl: string,
   ) {}
 
@@ -32,11 +33,22 @@ export class Bot {
     this.logger.debug("Evaluating if user can trigger the bot");
     const author = this.pr.user.id;
     if (this.comment.user.id === author) {
-      this.logger.debug("Author of comment is also author of PR");
+      this.logger.info("Author of comment is also author of PR");
       return true;
     }
     this.logger.debug("Author of comment is not the author of the PR");
 
+    if (this.allowlistedUsers && this.allowlistedUsers.length > 0) {
+      if (this.allowlistedUsers.indexOf(this.comment.user.login) > -1) {
+        this.logger.info("User belongs to allowlisted users");
+        return true;
+      }
+      this.logger.debug("User does not belong to list of allowlisted users");
+    }
+
+    this.logger.debug(
+      "Evaluating if author of comment is a public member of the org",
+    );
     return await this.commentsApi.userBelongsToOrg(this.comment.user.login);
   }
 
@@ -71,7 +83,7 @@ export class Bot {
     }
     this.logger.debug("User can trigger bot");
 
-    const [_, command] = this.comment.body.split(" ");
+    const [, command] = this.comment.body.split(" ");
     try {
       switch (command as Command) {
         // Simply `/merge`
