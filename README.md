@@ -61,3 +61,14 @@ The bot can only be triggered by the author of the PR or by users who *publicly*
 By publicly, I refer to the members of an organization which can be seen by external parties. If you are not sure if you are part of an organization, simply open https://github.com/orgs/**your_organization**/people in a private window. If you don’t see your name there, you are not a public member.
 
 Find related docs here: [Publicizing or hiding organization membership](https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-personal-account-on-github/managing-your-membership-in-organizations/publicizing-or-hiding-organization-membership).
+
+## Deployment
+
+To deploy a new version you need to update two files:
+- [`package.json`](./package.json): Update the version number.
+- [`action.yml`](./action.yml): Update the image number in `runs.image`.
+**Important**: Both versions must have the same number.
+
+When a commit is pushed to the main branch and the versions have changed, the system will automatically tag the commit and release a new package with such version.
+
+You can find all the available versions in the [release section](./releases).
