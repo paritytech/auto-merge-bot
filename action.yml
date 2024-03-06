@@ -27,4 +27,4 @@ outputs:
 
 runs:
   using: 'docker'
-  image: 'docker://ghcr.io/paritytech/auto-merge-bot/action:1.0.0'
+  image: 'docker://ghcr.io/paritytech/auto-merge-bot/action:1.0.1'
