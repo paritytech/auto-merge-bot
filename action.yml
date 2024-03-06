@@ -18,10 +18,13 @@ inputs:
   ALLOWLIST:
     required: false
     description: List of users which are allowed to use the bot. Separated by commas (abc,def,ghi)
+  ALLOW_UNSTABLE:
+    required: false
+    description: If unstable, ready to merge, PRs can be merged. Defaults to true
 outputs:
   repo:
     description: 'The name of the repo in owner/repo pattern'
 
 runs:
   using: 'docker'
-  image: 'docker://ghcr.io/paritytech/auto-merge-bot/action:1.0.0'
+  image: 'docker://ghcr.io/paritytech/auto-merge-bot/action:1.0.1'

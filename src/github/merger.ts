@@ -35,7 +35,25 @@ export class Merger {
     private readonly gql: typeof graphql,
     private readonly logger: ActionLogger,
     private readonly mergeMethod: PullRequestMergeMethod,
+    private readonly allowUnstable: boolean = false,
   ) {}
+
+  errorPermitsToMerge(error: Error): boolean {
+    // If it's clean it can be merged
+    if (error.message.includes("Pull request is in clean status")) {
+      return true;
+    }
+
+    // If it is unstable and allowed, it can also be merged
+    if (error.message.includes("Pull request is in unstable status")) {
+      this.logger.warn(
+        "PR is unstable! Some non required status checks are failing.",
+      );
+      return this.allowUnstable;
+    }
+
+    return false;
+  }
 
   async enableAutoMerge(): Promise<void> {
     try {
@@ -48,10 +66,7 @@ export class Merger {
       this.logger.info("Succesfully enabled auto-merge");
     } catch (error) {
       this.logger.warn(error as Error);
-      if (
-        error instanceof Error &&
-        error.message.includes("Pull request is in clean status")
-      ) {
+      if (error instanceof Error && this.errorPermitsToMerge(error)) {
         this.logger.warn(
           "Pull Request is ready to merge. Running merge command instead",
         );

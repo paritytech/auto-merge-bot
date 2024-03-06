@@ -1,6 +1,6 @@
 {
   "name": "auto-merge-bot",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Bot which enables or disable auto-merge",
   "main": "src/index.ts",
   "scripts": {
