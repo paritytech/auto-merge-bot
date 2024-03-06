@@ -54,7 +54,7 @@ const getMergeMethod = (): PullRequestMergeMethod => {
 
 /** If it should allow PRs that have failed NON REQUIRED status check to be merged */
 const getAllowUnstable = (): boolean => {
-  return getInput("ALLOW_UNSTABLE", { required: false }) === "true";
+  return getInput("ALLOW_UNSTABLE", { required: false }) !== "false";
 };
 
 const silentMode = getInput("SILENT", { required: false }) === "true";
