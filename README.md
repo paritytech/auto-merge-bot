@@ -31,6 +31,7 @@ jobs:
         with:
           GITHUB_TOKEN: '${{ github.token }}'
           MERGE_METHOD: "SQUASH"
+          ALLOW_UNSTABLE: true
 ```
 
 #### Inputs
@@ -48,6 +49,10 @@ You can find all the inputs in [the action file](./action.yml), but let's walk t
 - `ALLOWLIST`: List of user accounts which are allowed to use the bot aside from the author and org members.
 	- **Optional**
 	- Must be a comma separated value: `user-1,user-2,user-3`.
+- `ALLOW_UNSTABLE`: If unstable, ready to merge, PRs can be merged
+  - An [unstable PR](https://docs.github.com/en/graphql/reference/enums#mergestatestatus) is a PR that can be merged, but a *non required status check* is failing.
+    - This is only relevant once the PR can be merged. GitHub's auto-merge always merges unstable PRs
+  - **Optional**: Defaults to `true`
 
 ## Usage
 
