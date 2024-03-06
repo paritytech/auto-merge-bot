@@ -47,7 +47,7 @@ export class Merger {
     // If it is unstable and allowed, it can also be merged
     if (error.message.includes("Pull request is in unstable status")) {
       this.logger.warn(
-        "PR is unstable! Some non required status check is failing.",
+        "PR is unstable! Some non required status checks are failing.",
       );
       return this.allowUnstable;
     }
