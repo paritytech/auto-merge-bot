@@ -52,6 +52,11 @@ const getMergeMethod = (): PullRequestMergeMethod => {
   return method;
 };
 
+/** If it should allow PRs that have failed NON REQUIRED status check to be merged */
+const getAllowUnstable = (): boolean => {
+  return getInput("ALLOW_UNSTABLE", { required: false }) === "true";
+};
+
 const silentMode = getInput("SILENT", { required: false }) === "true";
 
 logger.info(
@@ -80,7 +85,15 @@ if (context.payload.comment) {
   const gql = getOctokit(token).graphql.defaults({
     headers: { authorization: `token ${token}` },
   }) as graphql;
-  const merger = new Merger(issue.node_id, gql, logger, getMergeMethod());
+  const mergeMethod = getMergeMethod();
+  const unstableAllowed = getAllowUnstable();
+  const merger = new Merger(
+    issue.node_id,
+    gql,
+    logger,
+    mergeMethod,
+    unstableAllowed,
+  );
   const bot = new Bot(
     comment,
     issue,
