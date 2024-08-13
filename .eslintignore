@@ -1,4 +1,4 @@
 node_modules
 dist
 .git
-src/github/graphql/*.ts
+src/github/graphql/*
