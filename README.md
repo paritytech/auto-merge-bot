@@ -53,6 +53,8 @@ You can find all the inputs in [the action file](./action.yml), but let's walk t
   - An [unstable PR](https://docs.github.com/en/graphql/reference/enums#mergestatestatus) is a PR that can be merged, but a *non required status check* is failing.
     - This is only relevant once the PR can be merged. GitHub's auto-merge always merges unstable PRs
   - **Optional**: Defaults to `true`
+- `UPDATE_BEFORE_MERGE`: If the bot should try to update the PR to be up to date before enabling auto-merge
+  - **Optional**: Defaults to false
 
 ## Usage
 
