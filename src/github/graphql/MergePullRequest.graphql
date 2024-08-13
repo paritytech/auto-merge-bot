@@ -1,0 +1,5 @@
+mutation MergePullRequest($prId: ID!, $mergeMethod: PullRequestMergeMethod!) {
+  mergePullRequest(input: {pullRequestId: $prId, mergeMethod: $mergeMethod}) {
+      clientMutationId
+  }
+}
