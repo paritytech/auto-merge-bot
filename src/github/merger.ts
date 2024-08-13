@@ -3,40 +3,17 @@ import { PullRequestMergeMethod } from "@octokit/graphql-schema";
 
 import { ActionLogger } from "./types";
 
-// https://docs.github.com/en/graphql/reference/mutations#enablepullrequestautomerge
-export const ENABLE_AUTO_MERGE = `
-mutation($prId: ID!, $mergeMethod: PullRequestMergeMethod!) {
-    enablePullRequestAutoMerge(input: {pullRequestId: $prId, mergeMethod: $mergeMethod}) {
-        clientMutationId
-    }
-}`;
-
-// https://docs.github.com/en/graphql/reference/mutations#disablepullrequestautomerge
-export const DISABLE_AUTO_MERGE = `
-mutation($prId: ID!) {
-    disablePullRequestAutoMerge(input: {pullRequestId: $prId}) {
-        clientMutationId
-    }
-}`;
-
-// https://docs.github.com/en/graphql/reference/mutations#mergepullrequest
-export const MERGE_PULL_REQUEST = `
-mutation($prId: ID!, $mergeMethod: PullRequestMergeMethod!) {
-  mergePullRequest(input: {pullRequestId: $prId, mergeMethod: $mergeMethod}) {
-      clientMutationId
-  }
-}`;
-
 export type MergeMethod = "SQUASH" | "MERGE" | "REBASE";
 
 export class Merger {
   constructor(
     private readonly nodeId: string,
-    private readonly gql: typeof graphql,
+    private readonly gqlApi: typeof graphql,
     private readonly logger: ActionLogger,
     private readonly mergeMethod: PullRequestMergeMethod,
     private readonly allowUnstable: boolean = false,
-  ) {}
+  ) {
+  }
 
   errorPermitsToMerge(error: Error): boolean {
     // If it's clean it can be merged
@@ -57,7 +34,7 @@ export class Merger {
 
   async enableAutoMerge(): Promise<void> {
     try {
-      await this.gql<{
+      await this.gqlApi<{
         enablePullRequestAutoMerge: { clientMutationId: unknown };
       }>(ENABLE_AUTO_MERGE, {
         prId: this.nodeId,
@@ -70,7 +47,7 @@ export class Merger {
         this.logger.warn(
           "Pull Request is ready to merge. Running merge command instead",
         );
-        await this.gql<{
+        await this.gqlApi<{
           mergePullRequest: { clientMutationId: unknown };
         }>(MERGE_PULL_REQUEST, {
           prId: this.nodeId,
@@ -84,9 +61,9 @@ export class Merger {
   }
 
   async disableAutoMerge(): Promise<void> {
-    await this.gql<{
+    await this.gqlApi<{
       disablePullRequestAutoMerge: { clientMutationId: unknown };
-    }>(DISABLE_AUTO_MERGE, {
+    }>(DISABLE_AUTO_MERGE as string, {
       prId: this.nodeId,
     });
     this.logger.info("Succesfully disabled auto-merge");
