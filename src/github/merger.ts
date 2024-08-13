@@ -9,10 +9,13 @@ import {
   MergePullRequestMutation,
   MergePullRequestMutationVariables,
   PullRequestMergeMethod,
+  UpdatePullRequestMutation,
+  UpdatePullRequestMutationVariables,
 } from "./graphql";
 import DISABLE_AUTO_MERGE from "./graphql/DisableAutoMerge";
 import ENABLE_AUTO_MERGE from "./graphql/EnableAutoMerge";
 import MERGE_PULL_REQUEST from "./graphql/MergePullRequest";
+import UPDATE_PULL_REQUEST from "./graphql/UpdatePullRequest";
 import { ActionLogger } from "./types";
 
 export type MergeMethod = "SQUASH" | "MERGE" | "REBASE";
@@ -41,6 +44,20 @@ export class Merger {
     }
 
     return false;
+  }
+
+  async updatePR(): Promise<void> {
+    this.logger.info("Updating branch before enabling auto-merge");
+    try {
+      await this.gql<
+        UpdatePullRequestMutationVariables,
+        UpdatePullRequestMutation
+      >(UPDATE_PULL_REQUEST, {
+        prId: this.nodeId,
+      });
+    } catch (err) {
+      this.logger.warn(err as Error);
+    }
   }
 
   async enableAutoMerge(): Promise<void> {
