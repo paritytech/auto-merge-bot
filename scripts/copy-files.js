@@ -18,9 +18,7 @@ const copyFile = (fileName, extension) => {
 };
 
 for (const file of files) {
-  if (file.endsWith(".graphql")) {
-    copyFile(`src/github/queries/${file}`, "ts");
+  if (file.endsWith(".gql")) {
+    copyFile(`src/github/graphql/${file}`, "ts");
   }
 }
-
-copyFile("src/render/template.html", "ts");

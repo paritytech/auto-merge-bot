@@ -4,7 +4,7 @@ import type { CodegenConfig } from '@graphql-codegen/cli';
 const config: CodegenConfig = {
   overwrite: true,
   schema: "./node_modules/@octokit/graphql-schema/schema.graphql",
-  documents: "src/**/*.graphql",
+  documents: "src/**/*.gql",
   generates: {
     "src/github/graphql/index.ts": {
       plugins: ["typescript", "typescript-operations"],
