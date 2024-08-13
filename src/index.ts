@@ -2,11 +2,11 @@ import { getInput, setFailed, setOutput } from "@actions/core";
 import { context, getOctokit } from "@actions/github";
 import { Context } from "@actions/github/lib/context";
 import { graphql } from "@octokit/graphql/dist-types/types";
-import { PullRequestMergeMethod } from "@octokit/graphql-schema";
 import { Issue, IssueComment } from "@octokit/webhooks-types";
 
 import { Bot } from "./bot";
 import { CommentsApi } from "./github/comments";
+import { PullRequestMergeMethod } from "./github/graphql";
 import { Merger } from "./github/merger";
 import { generateCoreLogger, getallowlistedUsers } from "./util";
 
@@ -59,6 +59,9 @@ const getAllowUnstable = (): boolean => {
 
 const silentMode = getInput("SILENT", { required: false }) === "true";
 
+const getupdateBeforeMerge = (): boolean =>
+  getInput("UPDATE_BEFORE_MERGE", { required: false }) === "true";
+
 logger.info(
   `Silent mode is ${
     silentMode ? "enabled" : "disabled. Bot will comment actions"
@@ -87,11 +90,12 @@ if (context.payload.comment) {
   }) as graphql;
   const mergeMethod = getMergeMethod();
   const unstableAllowed = getAllowUnstable();
+  const updateBeforeMerge = getupdateBeforeMerge();
   const merger = new Merger(
     issue.node_id,
     gql,
     logger,
-    mergeMethod,
+    mergeMethod as PullRequestMergeMethod,
     unstableAllowed,
   );
   const bot = new Bot(
@@ -100,6 +104,7 @@ if (context.payload.comment) {
     logger,
     commentsApi,
     allowlistedUsers,
+    updateBeforeMerge,
     actionUrl,
   );
   bot

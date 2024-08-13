@@ -30,6 +30,7 @@ export class Bot {
     private readonly logger: ActionLogger,
     private readonly commentsApi: CommentsApi,
     private readonly allowlistedUsers: string[],
+    private readonly updateBeforeMerge: boolean,
     private readonly actionUrl: string,
   ) {}
 
@@ -94,6 +95,9 @@ export class Bot {
         // Simply `/merge`
         case undefined:
           await this.commentsApi.reactToComment(this.comment.id, "+1");
+          if (this.updateBeforeMerge) {
+            await merger.updatePR();
+          }
           await merger.enableAutoMerge();
           await this.commentsApi.comment(
             "Enabled `auto-merge` in Pull Request\n\n" + detailCommands,

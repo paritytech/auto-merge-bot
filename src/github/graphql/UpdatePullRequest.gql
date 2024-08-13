@@ -1,0 +1,10 @@
+mutation UpdatePullRequestBranch($prId: ID!) {
+  updatePullRequestBranch(input: {pullRequestId: $prId}) {
+    clientMutationId
+    pullRequest {
+      title
+      number
+      headRefName
+    }
+  }
+}

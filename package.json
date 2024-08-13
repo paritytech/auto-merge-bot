@@ -1,6 +1,6 @@
 {
   "name": "auto-merge-bot",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Bot which enables or disable auto-merge",
   "main": "src/index.ts",
   "scripts": {
@@ -8,7 +8,10 @@
     "build": "ncc build --license LICENSE",
     "test": "jest",
     "fix": "eslint --fix 'src/**/*'",
-    "lint": "eslint 'src/**/*'"
+    "lint": "eslint 'src/**/*'",
+    "codegen": "graphql-codegen --config codegen.ts",
+    "copy": "node scripts/copy-files.js",
+    "postinstall": "npm-run-all codegen copy"
   },
   "repository": {
     "type": "git",
@@ -25,15 +28,20 @@
     "@actions/github": "^6.0.0",
     "@octokit/graphql": "^8.0.1",
     "@octokit/graphql-schema": "^14.58.0",
-    "@octokit/webhooks-types": "^7.3.2"
+    "@octokit/webhooks-types": "^7.4.0",
+    "graphql": "^16.8.1"
   },
   "devDependencies": {
     "@eng-automation/js-style": "^2.3.0",
+    "@graphql-codegen/cli": "5.0.2",
+    "@graphql-codegen/typescript": "4.0.6",
+    "@graphql-codegen/typescript-resolvers": "^4.0.6",
     "@types/jest": "^29.5.12",
     "@vercel/ncc": "^0.38.1",
     "jest": "^29.7.0",
     "jest-mock-extended": "^3.0.5",
+    "npm-run-all": "^4.1.5",
     "ts-jest": "^29.1.2",
-    "typescript": "^5.3.3"
+    "typescript": "^5.4.3"
   }
 }

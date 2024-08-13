@@ -1,38 +1,29 @@
 import { graphql } from "@octokit/graphql";
-import { PullRequestMergeMethod } from "@octokit/graphql-schema";
+import { RequestParameters } from "@octokit/graphql/dist-types/types";
 
+import {
+  DisableAutoMergeMutation,
+  DisableAutoMergeMutationVariables,
+  EnableAutoMergeMutation,
+  EnableAutoMergeMutationVariables,
+  MergePullRequestMutation,
+  MergePullRequestMutationVariables,
+  PullRequestMergeMethod,
+  UpdatePullRequestBranchMutation,
+  UpdatePullRequestBranchMutationVariables,
+} from "./graphql";
+import DISABLE_AUTO_MERGE from "./graphql/DisableAutoMerge";
+import ENABLE_AUTO_MERGE from "./graphql/EnableAutoMerge";
+import MERGE_PULL_REQUEST from "./graphql/MergePullRequest";
+import UPDATE_PULL_REQUEST from "./graphql/UpdatePullRequest";
 import { ActionLogger } from "./types";
-
-// https://docs.github.com/en/graphql/reference/mutations#enablepullrequestautomerge
-export const ENABLE_AUTO_MERGE = `
-mutation($prId: ID!, $mergeMethod: PullRequestMergeMethod!) {
-    enablePullRequestAutoMerge(input: {pullRequestId: $prId, mergeMethod: $mergeMethod}) {
-        clientMutationId
-    }
-}`;
-
-// https://docs.github.com/en/graphql/reference/mutations#disablepullrequestautomerge
-export const DISABLE_AUTO_MERGE = `
-mutation($prId: ID!) {
-    disablePullRequestAutoMerge(input: {pullRequestId: $prId}) {
-        clientMutationId
-    }
-}`;
-
-// https://docs.github.com/en/graphql/reference/mutations#mergepullrequest
-export const MERGE_PULL_REQUEST = `
-mutation($prId: ID!, $mergeMethod: PullRequestMergeMethod!) {
-  mergePullRequest(input: {pullRequestId: $prId, mergeMethod: $mergeMethod}) {
-      clientMutationId
-  }
-}`;
 
 export type MergeMethod = "SQUASH" | "MERGE" | "REBASE";
 
 export class Merger {
   constructor(
     private readonly nodeId: string,
-    private readonly gql: typeof graphql,
+    private readonly gqlApi: typeof graphql,
     private readonly logger: ActionLogger,
     private readonly mergeMethod: PullRequestMergeMethod,
     private readonly allowUnstable: boolean = false,
@@ -55,14 +46,34 @@ export class Merger {
     return false;
   }
 
+  async updatePR(): Promise<void> {
+    this.logger.info("Updating branch before enabling auto-merge");
+    try {
+      const update = await this.gql<
+        UpdatePullRequestBranchMutationVariables,
+        UpdatePullRequestBranchMutation
+      >(UPDATE_PULL_REQUEST, {
+        prId: this.nodeId,
+      });
+      this.logger.info(
+        `Succesfully updated ${
+          update.updatePullRequestBranch?.pullRequest?.headRefName ?? "unknown"
+        } branch`,
+      );
+    } catch (err) {
+      this.logger.warn(err as Error);
+    }
+  }
+
   async enableAutoMerge(): Promise<void> {
     try {
-      await this.gql<{
-        enablePullRequestAutoMerge: { clientMutationId: unknown };
-      }>(ENABLE_AUTO_MERGE, {
-        prId: this.nodeId,
-        mergeMethod: this.mergeMethod,
-      });
+      await this.gql<EnableAutoMergeMutationVariables, EnableAutoMergeMutation>(
+        ENABLE_AUTO_MERGE,
+        {
+          prId: this.nodeId,
+          mergeMethod: this.mergeMethod as PullRequestMergeMethod,
+        },
+      );
       this.logger.info("Succesfully enabled auto-merge");
     } catch (error) {
       this.logger.warn(error as Error);
@@ -70,9 +81,10 @@ export class Merger {
         this.logger.warn(
           "Pull Request is ready to merge. Running merge command instead",
         );
-        await this.gql<{
-          mergePullRequest: { clientMutationId: unknown };
-        }>(MERGE_PULL_REQUEST, {
+        await this.gql<
+          MergePullRequestMutationVariables,
+          MergePullRequestMutation
+        >(MERGE_PULL_REQUEST, {
           prId: this.nodeId,
           mergeMethod: this.mergeMethod,
         });
@@ -84,11 +96,17 @@ export class Merger {
   }
 
   async disableAutoMerge(): Promise<void> {
-    await this.gql<{
-      disablePullRequestAutoMerge: { clientMutationId: unknown };
-    }>(DISABLE_AUTO_MERGE, {
-      prId: this.nodeId,
-    });
+    await this.gql<DisableAutoMergeMutationVariables, DisableAutoMergeMutation>(
+      DISABLE_AUTO_MERGE,
+      { prId: this.nodeId },
+    );
     this.logger.info("Succesfully disabled auto-merge");
+  }
+
+  async gql<Params extends RequestParameters, Output>(
+    query: string,
+    params: Params,
+  ): Promise<Output> {
+    return await this.gqlApi<Output>(query, params);
   }
 }

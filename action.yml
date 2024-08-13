@@ -21,10 +21,13 @@ inputs:
   ALLOW_UNSTABLE:
     required: false
     description: If unstable, ready to merge, PRs can be merged. Defaults to true
+  UPDATE_BEFORE_MERGE:
+    required: false
+    description: If the bot should update the Pull Request Branch before enabling auto-merge
 outputs:
   repo:
     description: 'The name of the repo in owner/repo pattern'
 
 runs:
   using: 'docker'
-  image: 'docker://ghcr.io/paritytech/auto-merge-bot/action:1.0.1'
+  image: 'docker://ghcr.io/paritytech/auto-merge-bot/action:1.1.0'

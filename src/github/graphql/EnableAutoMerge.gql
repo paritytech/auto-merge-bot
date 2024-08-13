@@ -1,0 +1,5 @@
+mutation EnableAutoMerge($prId: ID!, $mergeMethod: PullRequestMergeMethod!) {
+    enablePullRequestAutoMerge(input: {pullRequestId: $prId, mergeMethod: $mergeMethod}) {
+        clientMutationId
+    }
+}
