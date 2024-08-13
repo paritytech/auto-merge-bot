@@ -9,8 +9,8 @@ import {
   MergePullRequestMutation,
   MergePullRequestMutationVariables,
   PullRequestMergeMethod,
-  UpdatePullRequestMutation,
-  UpdatePullRequestMutationVariables,
+  UpdatePullRequestBranchMutation,
+  UpdatePullRequestBranchMutationVariables,
 } from "./graphql";
 import DISABLE_AUTO_MERGE from "./graphql/DisableAutoMerge";
 import ENABLE_AUTO_MERGE from "./graphql/EnableAutoMerge";
@@ -27,7 +27,7 @@ export class Merger {
     private readonly logger: ActionLogger,
     private readonly mergeMethod: PullRequestMergeMethod,
     private readonly allowUnstable: boolean = false,
-  ) { }
+  ) {}
 
   errorPermitsToMerge(error: Error): boolean {
     // If it's clean it can be merged
@@ -50,12 +50,16 @@ export class Merger {
     this.logger.info("Updating branch before enabling auto-merge");
     try {
       const update = await this.gql<
-        UpdatePullRequestMutationVariables,
-        UpdatePullRequestMutation
+        UpdatePullRequestBranchMutationVariables,
+        UpdatePullRequestBranchMutation
       >(UPDATE_PULL_REQUEST, {
         prId: this.nodeId,
       });
-      this.logger.info(`Succesfully updated ${update.updatePullRequest?.pullRequest?.headRefName}`);
+      this.logger.info(
+        `Succesfully updated ${
+          update.updatePullRequestBranch?.pullRequest?.headRefName ?? "unknown"
+        } branch`,
+      );
     } catch (err) {
       this.logger.warn(err as Error);
     }
