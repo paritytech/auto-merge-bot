@@ -4,6 +4,7 @@ mutation UpdatePullRequest($prId: ID!) {
     pullRequest {
       title
       number
+      headRefName
     }
   }
 }

@@ -27,7 +27,7 @@ export class Merger {
     private readonly logger: ActionLogger,
     private readonly mergeMethod: PullRequestMergeMethod,
     private readonly allowUnstable: boolean = false,
-  ) {}
+  ) { }
 
   errorPermitsToMerge(error: Error): boolean {
     // If it's clean it can be merged
@@ -49,12 +49,13 @@ export class Merger {
   async updatePR(): Promise<void> {
     this.logger.info("Updating branch before enabling auto-merge");
     try {
-      await this.gql<
+      const update = await this.gql<
         UpdatePullRequestMutationVariables,
         UpdatePullRequestMutation
       >(UPDATE_PULL_REQUEST, {
         prId: this.nodeId,
       });
+      this.logger.info(`Succesfully updated ${update.updatePullRequest?.pullRequest?.headRefName}`);
     } catch (err) {
       this.logger.warn(err as Error);
     }
